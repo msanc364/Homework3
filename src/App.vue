@@ -1,5 +1,5 @@
 <script setup>
-  import {ref} from 'vue'
+  import {ref, onMounted, watch} from 'vue'
   const myArray = ref([])
   const name = ref('')
   const input_content = ref('')
@@ -19,6 +19,25 @@
     input_content.value = ''
     input_category.value = null
   }
+
+  const removeTodo = (x) =>{
+    myArray.value = myArray.value.filter(Element => Element !== x)
+  }
+
+  onMounted( () =>{
+    name.value = localStorage.getItem('name') || ''
+    myArray.value = JSON.parse(localStorage.getItem('myArray')) || []
+
+  })
+
+  watch(name, (newVal) => {
+    localStorage.setItem('name', newVal)
+  })
+
+  watch(myArray, (newVal) => {
+    localStorage.setItem('myArray', JSON.stringify(newVal))
+  }, {deep: true})
+
 
 
 </script>
@@ -67,9 +86,17 @@
             <input type="checkbox" v-model="x.done"/>
             <span :class="`bubble ${x.category}`"></span>
           </label>
+
+
+
           <div class="todo-content">
             <input type="text" v-model="x.content"/>
           </div>
+
+          <div class="actions">
+            <button class="delete" @click="removeTodo(x)">Delete</button>
+          </div>
+
 
         </div>
       </div>
